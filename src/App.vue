@@ -26,15 +26,34 @@ onMounted(async () => {
 </script>
 
 <template>
-  <header>
-      <router-link to="/error"> Go to error</router-link>
-  </header>
-  <main>
-    <router-view></router-view>
-  </main>
-  <footer></footer>
-
+  <div id="body">
+    <header id="header">
+      Header
+    </header>
+    <main id="main">
+      <router-view></router-view>
+    </main>
+    <footer id="footer">Footer</footer>
+  </div>
 </template>
 
 <style scoped>
+#body {
+  display: flex;
+  flex-direction: column;
+  min-height: 25rem;
+  min-width: 18rem;
+}
+
+#footer {
+  flex-grow: 0.1;
+}
+
+#header {
+  flex-grow: 0.1;
+}
+
+#main {
+  flex-grow: 1;
+}
 </style>
