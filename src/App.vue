@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
 import { getCurrentTabID } from '@/utils'
-import { onMounted } from 'vue';
+import { onMounted, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router'
+import { SavedItem } from './models/SavedItem';
 
 const router = useRouter();
 
@@ -29,6 +30,8 @@ onMounted(async () => {
   }
 })
 
+const savedItemsList: Ref<SavedItem[]> = ref([]);
+
 async function collectSavedItems() {
   const port =   chrome.tabs.connect(tabId, { name: MAIN });
   const message = { type: GET_COLLECTION_SAVED_ITEMS };
@@ -37,7 +40,7 @@ async function collectSavedItems() {
   port.postMessage(message);
 
   port.onMessage.addListener((request) => {
-    console.log('Response got:', request);
+    savedItemsList.value = request;
   });
 }
 </script>
@@ -49,8 +52,17 @@ async function collectSavedItems() {
     </header>
     <main id="main">
       <router-view></router-view>
+      <div style="display: flex; flex-direction: column; row-gap: 0.5rem;">
+        <a
+          v-for="savedItem in savedItemsList"
+          :href="savedItem.url"
+          target="_blank"
+        >
+          {{savedItem.title}}
+        </a>
+      </div>
     </main>
-        <footer id="footer">
+    <footer id="footer">
       <button @click="collectSavedItems()">
         Collect saved items
       </button>

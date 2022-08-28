@@ -56,11 +56,22 @@ function handleResponse(port: chrome.runtime.Port) {
   function extractSavedItemData(item:any) {
     const anchorTag = item.lastChild;
     const {
-      href: url,
+      href,
       ariaLabel: title
     } = anchorTag;
-  
-    return { url, title };
+    // https://www.google.com/url?q=https://www.creativebloq.com/features/web-design-trends-2022-so-far&usg=AOvVaw1XpcGina4hT70mCwGKZ9r9
+
+    const re = /(?=(q=)).+(?=&)/gm
+    let mainUrl: any;
+
+    mainUrl = re.exec(href) 
+
+    if (mainUrl) {
+      // @TODO: Improve readibility + TS
+      mainUrl = mainUrl[0].split("q=")[1];
+    }
+
+    return { url: href, title };
   }
   
   const { childNodes: columns } = columnsWrapper;
