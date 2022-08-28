@@ -10,14 +10,6 @@ export default defineConfig({
     alias: [{ find: '@', replacement: resolve(__dirname, 'src') }]
   },
   build: {
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          "background": ["src/services/background/background.ts"]
-        },
-        chunkFileNames: "[name].js"
-      }
-    },
     sourcemap: true,
   },
 })
