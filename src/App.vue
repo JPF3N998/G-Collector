@@ -1,20 +1,25 @@
 <script setup lang="ts">
-import { ContentScriptMessageTypes } from '@/constants'
+import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
 import { getCurrentTabID } from '@/utils'
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router'
 
-const  {
-  GET_CONTENT_SCRIPT_STATUS,
-  GREET_CONTENT_SCRIPT
-} = ContentScriptMessageTypes;
-
 const router = useRouter();
 
+const  {
+  GET_CONTENT_SCRIPT_STATUS,
+  GET_COLLECTION_SAVED_ITEMS
+} = ContentScriptMessageTypes;
+
+const {
+  MAIN
+} = MessagePortNames
+
+let tabId: number;
 onMounted(async () => {
   try {
     const message = { type: GET_CONTENT_SCRIPT_STATUS };
-    const tabId = await getCurrentTabID();
+    tabId = await getCurrentTabID();
     const response = await chrome.tabs.sendMessage(tabId, message);
     console.log('Content script injected: ', response);
   } catch {
@@ -23,6 +28,14 @@ onMounted(async () => {
     });
   }
 })
+
+async function collectSavedItems() {
+  const port =   chrome.tabs.connect(tabId, { name: MAIN });
+  const message = { type: GET_COLLECTION_SAVED_ITEMS };
+  if (!port) throw Error('Error connecting to port')
+
+  port.postMessage(message);
+}
 </script>
 
 <template>
@@ -33,7 +46,11 @@ onMounted(async () => {
     <main id="main">
       <router-view></router-view>
     </main>
-    <footer id="footer">Footer</footer>
+        <footer id="footer">
+      <button @click="collectSavedItems()">
+        Collect saved items
+      </button>
+    </footer>
   </div>
 </template>
 
