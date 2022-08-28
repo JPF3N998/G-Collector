@@ -3,6 +3,7 @@ import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
 import { getCurrentTabID } from '@/utils'
 import { onMounted, Ref, ref } from 'vue';
 import { useRouter } from 'vue-router'
+import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { SavedItem } from './models/SavedItem';
 
 const router = useRouter();
@@ -29,8 +30,7 @@ onMounted(async () => {
     });
   }
 })
-
-const savedItemsList: Ref<SavedItem[]> = ref([]);
+const savedItemsStore = useSavedItemsStore();
 
 async function collectSavedItems() {
   const port =   chrome.tabs.connect(tabId, { name: MAIN });
@@ -39,9 +39,13 @@ async function collectSavedItems() {
 
   port.postMessage(message);
 
-  port.onMessage.addListener((request) => {
-    if (Array.isArray(request) && request.length > 0){
-      savedItemsList.value = request;
+  port.onMessage.addListener((response) => {
+    if (Array.isArray(response) && response.length > 0){
+      
+      response.forEach((item: SavedItem) => {
+        savedItemsStore.addSavedItem(item)
+      })
+
     } else {
       router.replace({
         path: '/empty'
@@ -60,7 +64,7 @@ async function collectSavedItems() {
       <router-view></router-view>
       <div style="display: flex; flex-direction: column; row-gap: 0.5rem;">
         <a
-          v-for="savedItem in savedItemsList"
+          v-for="savedItem in savedItemsStore.savedItemsAsArray"
           :href="savedItem.url"
           target="_blank"
         >
