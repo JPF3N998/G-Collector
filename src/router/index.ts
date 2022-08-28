@@ -12,6 +12,11 @@ const routes = [
     path: "/unsupported",
     name: "Unsupported",
     component: () => import('@/views/Unsupported.vue')
+  },
+  {
+    path:"/empty",
+    name:"Empty",
+    component: () => import('@/views/Empty.vue')
   }
 ]
 

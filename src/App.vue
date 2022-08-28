@@ -40,7 +40,13 @@ async function collectSavedItems() {
   port.postMessage(message);
 
   port.onMessage.addListener((request) => {
-    savedItemsList.value = request;
+    if (Array.isArray(request) && request.length > 0){
+      savedItemsList.value = request;
+    } else {
+      router.replace({
+        path: '/empty'
+      });
+    }
   });
 }
 </script>

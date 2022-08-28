@@ -111,6 +111,3 @@ function handleResponse(port: chrome.runtime.Port) {
 
   return data;
 }
-
-
-
