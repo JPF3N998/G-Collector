@@ -9,7 +9,7 @@ const  {
 
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     if (request.type === GET_CONTENT_SCRIPT_STATUS) {
-      sendResponse({ status: true });
+      sendResponse(true);
     }
 
     if (request.type === GREET_CONTENT_SCRIPT) {
