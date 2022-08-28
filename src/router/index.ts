@@ -9,9 +9,9 @@ const routes = [
     component: Home
   },
   {
-    path: "/error",
-    name: "Error",
-    component: () => import('@/views/Error.vue')
+    path: "/unsupported",
+    name: "Unsupported",
+    component: () => import('@/views/Unsupported.vue')
   }
 ]
 
