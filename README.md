@@ -23,3 +23,8 @@ _Manifest V3 by the way :)_
 
 Wanted to attempt creating a Chrome Extension with manifest V3 due to V2 being deprecated soon. My career started by working with Vue 2, making it a no brainer to choose this framework. Vue 3 is the new official version so I'm also learning it through this. Vite also is gaining traction so also learing about it. Additionally, I've seen TS but haven't fully put it to practice so basically I'm learning 4 technologies at the same time here. :)
 
+# Roadmap
+
+- Show buttons to help users redirect and extract from a specific collection instead of them having to manually go there and run the extension
+
+- UI improvement
