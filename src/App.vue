@@ -32,9 +32,13 @@ onMounted(async () => {
 async function collectSavedItems() {
   const port =   chrome.tabs.connect(tabId, { name: MAIN });
   const message = { type: GET_COLLECTION_SAVED_ITEMS };
-  if (!port) throw Error('Error connecting to port')
+  if (!port) throw Error('Error connecting to port');
 
   port.postMessage(message);
+
+  port.onMessage.addListener((request) => {
+    console.log('Response got:', request);
+  });
 }
 </script>
 
