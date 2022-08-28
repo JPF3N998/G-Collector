@@ -18,15 +18,17 @@ const {
 } = MessagePortNames
 
 let tabId: number;
+const shouldShowExtractButton = ref(false)
 onMounted(async () => {
   try {
     const message = { type: GET_CONTENT_SCRIPT_STATUS };
     tabId = await getCurrentTabID();
     const response = await chrome.tabs.sendMessage(tabId, message);
     console.log('Content script injected: ', response);
+    shouldShowExtractButton.value = true;
   } catch {
     router.replace({
-      path: '/unsupported'
+      name: 'unsupported'
     });
   }
 })
@@ -48,7 +50,7 @@ async function collectSavedItems() {
 
     } else {
       router.replace({
-        path: '/empty'
+        name: 'empty'
       });
     }
   });
@@ -73,7 +75,10 @@ async function collectSavedItems() {
       </div>
     </main>
     <footer id="footer">
-      <button @click="collectSavedItems()">
+      <button
+        v-if="shouldShowExtractButton"
+        @click="collectSavedItems()"
+      >
         Collect saved items
       </button>
     </footer>

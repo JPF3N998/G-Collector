@@ -5,17 +5,17 @@ import Home from '@/views/Home.vue'
 const routes = [
   {
     path: "/",
-    name: "Home",
+    name: "home",
     component: Home
   },
   {
     path: "/unsupported",
-    name: "Unsupported",
+    name: "unsupported",
     component: () => import('@/views/Unsupported.vue')
   },
   {
     path:"/empty",
-    name:"Empty",
+    name:"empty",
     component: () => import('@/views/Empty.vue')
   }
 ]
