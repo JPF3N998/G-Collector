@@ -28,3 +28,9 @@ Wanted to attempt creating a Chrome Extension with manifest V3 due to V2 being d
 - Show buttons to help users redirect and extract from a specific collection instead of them having to manually go there and run the extension
 
 - UI improvement
+
+- Integration with 3rd party apps:
+    - Guardo.io
+    - Pocket
+    - Notion
+    - etc.
