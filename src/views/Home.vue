@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
 import { getCurrentTabID } from '@/utils'
-import { onMounted, Ref, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router'
 import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { SavedItem } from '@/models/SavedItem';
+import SavedItemList from '@/components/SavedItemList.vue';
 
 const router = useRouter();
 
-const  {
+const {
   GET_CONTENT_SCRIPT_STATUS,
   GET_COLLECTION_SAVED_ITEMS
 } = ContentScriptMessageTypes;
@@ -35,15 +36,15 @@ onMounted(async () => {
 const savedItemsStore = useSavedItemsStore();
 
 async function collectSavedItems() {
-  const port =   chrome.tabs.connect(tabId, { name: MAIN });
+  const port = chrome.tabs.connect(tabId, { name: MAIN });
   const message = { type: GET_COLLECTION_SAVED_ITEMS };
   if (!port) throw Error('Error connecting to port');
 
   port.postMessage(message);
 
   port.onMessage.addListener((response) => {
-    if (Array.isArray(response) && response.length > 0){
-      
+    if (Array.isArray(response) && response.length > 0) {
+
       response.forEach((item: SavedItem) => {
         savedItemsStore.addSavedItem(item)
       })
@@ -59,8 +60,10 @@ async function collectSavedItems() {
 
 <template>
   <div id="body">
+    <header></header>
     <main id="main">
-      <div style="display: flex; flex-direction: column; row-gap: 0.5rem;">
+      <SavedItemList />
+      <!-- <div style="display: flex; flex-direction: column; row-gap: 0.5rem;">
         <a
           v-for="savedItem in savedItemsStore.savedItemsAsArray"
           :href="savedItem.url"
@@ -68,15 +71,10 @@ async function collectSavedItems() {
         >
           {{savedItem.title}}
         </a>
-      </div>
+      </div>-->
     </main>
     <footer id="footer">
-      <button
-        v-if="shouldShowExtractButton"
-        @click="collectSavedItems()"
-      >
-        Collect saved items
-      </button>
+      <button v-if="shouldShowExtractButton" @click="collectSavedItems()">Collect saved items</button>
     </footer>
   </div>
 </template>
@@ -85,15 +83,17 @@ async function collectSavedItems() {
 #body {
   display: flex;
   flex-direction: column;
-  min-height: 25rem;
-  min-width: 18rem;
+  min-height: 35rem;
+  min-width: 25rem;
+  max-height: 35rem;
 }
 
 #footer {
-  flex-grow: 0.1;
+  flex-grow: 0.01;
 }
 
 #header {
+  height: min-content;
   flex-grow: 0.1;
 }
 
