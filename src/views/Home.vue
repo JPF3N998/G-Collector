@@ -83,7 +83,6 @@ async function collectSavedItems() {
 #body {
   display: flex;
   flex-direction: column;
-  min-height: 35rem;
   min-width: 25rem;
   max-height: 35rem;
 }

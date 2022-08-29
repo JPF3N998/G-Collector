@@ -13,7 +13,6 @@ onUpdated(() => {
 
 <template>
 <!-- Use suspense element while stuff loads? -->
-  <h1>{{shouldRenderItemList}}</h1>
   <section
     v-if="shouldRenderItemList"
     class="section"
@@ -23,7 +22,9 @@ onUpdated(() => {
       :key="savedItem.url"
       class="item-row"
     >
-      <input type="checkbox" :id="savedItem.url">
+      <input class="checkbox" type="checkbox" :id="savedItem.url">
+      <!-- Replace anchor text with an icon to avoid accidental
+      clicks and forcing user to re do everything -->
       <a
         :href="savedItem.url"
         target="_blank"
@@ -35,15 +36,24 @@ onUpdated(() => {
 </template>
 
 <style scoped>
+.checkbox{
+  transform: scale(1.2);
+}
+
 .item-row {
-  display: flex;
   align-items: center;
+  column-gap: 0.3rem;
+  display: flex;
   min-height: 2rem;
 }
 
 .section {
- overflow: auto;
- max-height: 25rem;
- overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  max-height: 20rem;
+  max-width: 25rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  row-gap: 0.5rem;
 }
 </style>
