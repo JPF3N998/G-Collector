@@ -63,15 +63,6 @@ async function collectSavedItems() {
     <header></header>
     <main id="main">
       <SavedItemList />
-      <!-- <div style="display: flex; flex-direction: column; row-gap: 0.5rem;">
-        <a
-          v-for="savedItem in savedItemsStore.savedItemsAsArray"
-          :href="savedItem.url"
-          target="_blank"
-        >
-          {{savedItem.title}}
-        </a>
-      </div>-->
     </main>
     <footer id="footer">
       <button v-if="shouldShowExtractButton" @click="collectSavedItems()">Collect saved items</button>
