@@ -35,7 +35,6 @@ chrome.runtime.onConnect.addListener((port) => {
 function handleResponse(port: chrome.runtime.Port) {
   port.onMessage.addListener(request => {
     if (request) {
-      console.log('Got: ', request)
       port.postMessage(extractSavedItemsData())
     }
   })
@@ -57,13 +56,15 @@ function handleResponse(port: chrome.runtime.Port) {
     const anchorTag = item.lastChild;
     const {
       href,
-      ariaLabel: title
+      ariaLabel
     } = anchorTag;
-    // https://www.google.com/url?q=https://www.creativebloq.com/features/web-design-trends-2022-so-far&usg=AOvVaw1XpcGina4hT70mCwGKZ9r9
 
-    const re = /(?=(q=)).+(?=&)/gm
+    let title = ariaLabel;
     let mainUrl: any;
+    let processed: SavedItem;
 
+    // Test URL
+    const re = /(q=).+(?=&)/gm
     mainUrl = re.exec(href) 
 
     if (mainUrl) {
@@ -71,9 +72,23 @@ function handleResponse(port: chrome.runtime.Port) {
       mainUrl = mainUrl[0].split("q=")[1];
     }
 
-    return { url: href, title };
+    try {
+      new URL(mainUrl)
+      processed = { url: mainUrl, title }
+    } catch {
+      processed = { url: href, title: `⚠️ ${title}` }
+    }
+
+    // Test title
+    // Title can be got by using reference to <a> and going in one div and second sibling
+    if (!title) {
+      title = `${processed.url}`;
+      processed = { url: href, title: `⚠️ ${title}` }
+    } 
+
+    return processed;
   }
-  
+
   const { childNodes: columns } = columnsWrapper;
   const savedItems: SavedItem[] = [];
 
@@ -83,7 +98,6 @@ function handleResponse(port: chrome.runtime.Port) {
       savedItems.push(extractedInfo);
     })
   });
-
   return savedItems;
 }
 
