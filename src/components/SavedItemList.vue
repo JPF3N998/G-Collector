@@ -5,10 +5,6 @@ import { computed, onUpdated } from 'vue';
 const savedItemsStore = useSavedItemsStore();
 
 const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0);
-
-onUpdated(() => {
-  console.log(shouldRenderItemList.value);
-})
 </script>
 
 <template>
@@ -26,7 +22,10 @@ onUpdated(() => {
       <!-- Replace anchor text with an icon to avoid accidental
       clicks and forcing user to re do everything -->
 
-      <span class="itemTitle">
+      <span
+        class="itemTitle"
+        :title="savedItem.title"
+      >
         {{savedItem.title}}
       </span>
         
@@ -53,25 +52,29 @@ onUpdated(() => {
   column-gap: 0.4rem;
   display: flex;
   min-height: 2rem;
-  padding-right: 0.3rem;
+  padding: 0.3rem;
+}
+
+.item-row:nth-child(odd) {
+  background-color: rgb(73, 73, 73);
 }
 
 .itemTitle {
   flex-grow: 1;
   max-height: 2.5rem;
-  max-width: 90%;
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
 
 .section {
+  border-radius: 0.3rem;
   display: flex;
   flex-direction: column;
+  margin: 0.5rem 0 0.5rem 0;
   max-height: 20rem;
   max-width: 25rem;
   overflow-x: hidden;
   overflow-y: scroll;
-  row-gap: 0.8rem;
 }
 
 .material-symbols-outlined {
