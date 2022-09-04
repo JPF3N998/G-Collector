@@ -60,12 +60,14 @@ async function collectSavedItems() {
 
 <template>
   <div id="body">
-    <header></header>
+    <header id="header">
+      <button v-if="shouldShowExtractButton" @click="collectSavedItems()">Collect saved items</button>
+
+    </header>
     <main id="main">
       <SavedItemList />
     </main>
     <footer id="footer">
-      <button v-if="shouldShowExtractButton" @click="collectSavedItems()">Collect saved items</button>
     </footer>
   </div>
 </template>
