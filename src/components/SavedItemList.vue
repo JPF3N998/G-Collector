@@ -26,7 +26,9 @@ onUpdated(() => {
       <!-- Replace anchor text with an icon to avoid accidental
       clicks and forcing user to re do everything -->
 
-      <span>{{savedItem.title}}</span>
+      <span class="itemTitle">
+        {{savedItem.title}}
+      </span>
         
       <a
         :href="savedItem.url"
@@ -54,7 +56,7 @@ onUpdated(() => {
   padding-right: 0.3rem;
 }
 
-.item-row > span {
+.itemTitle {
   flex-grow: 1;
   max-height: 2.5rem;
   max-width: 90%;
