@@ -63,11 +63,15 @@ function handleResponse(port: chrome.runtime.Port) {
 
     let title = ariaLabel;
     let mainUrl: any;
-    let processed: SavedItem;
+    let processed: SavedItem = {
+      _id: '',
+      url: '',
+      title: ''
+    };
 
     // Test URL
     const re = /(q=).+(?=&)/gm
-    mainUrl = re.exec(href) 
+    mainUrl = re.exec(href);
 
     if (mainUrl) {
       // @TODO: Improve readibility + TS
@@ -76,16 +80,19 @@ function handleResponse(port: chrome.runtime.Port) {
 
     try {
       new URL(mainUrl)
-      processed = { url: mainUrl, title }
+      processed.url = mainUrl;
+      processed.title = title;
     } catch {
-      processed = { url: href, title: `⚠️ ${title}` }
+      processed.url = href;
+      processed.title = `⚠️ ${title}`;
     }
 
     // Test title
     // Title can be got by using reference to <a> and going in one div and second sibling
     if (!title) {
       title = `${processed.url}`;
-      processed = { url: href, title: `⚠️ ${title}` }
+      processed.url = href
+      processed.title = `⚠️ ${title}`;
     }
     
     processed._id = getUid();

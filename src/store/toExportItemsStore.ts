@@ -2,15 +2,25 @@ import { SavedItem } from '@/models/SavedItem'
 import { defineStore } from 'pinia'
 import { Ref, ref } from 'vue';
 
-export const useSavedItemsStore= defineStore('savedItemsStore', () => {
-  const itemsToExport: Ref<SavedItem[]> = ref([]);
+export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
+  const itemsToExport = ref(new Map<string, SavedItem>());
 
-  function selectForExport(savedItem: SavedItem) {
-    itemsToExport.value.push(savedItem);
+  function addItemToExport(savedItem: SavedItem | undefined) {
+    if (savedItem && savedItem._id) {
+      itemsToExport.value.set(savedItem._id, savedItem);
+    }
   }
 
-  return { 
+  function removeItemFromExport(_id: string) {
+    const entryExists = itemsToExport.value.has(_id);
+    if (entryExists) {
+      itemsToExport.value.delete(_id);
+    }
+  }
+
+  return {
+    addItemToExport,
     itemsToExport,
-    selectForExport
+    removeItemFromExport
   };
 })

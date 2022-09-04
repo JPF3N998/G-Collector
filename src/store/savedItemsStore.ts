@@ -6,10 +6,13 @@ export const useSavedItemsStore= defineStore('savedItemsStore', () => {
   const savedItems = ref(new Map<string, SavedItem>());
   
   function addSavedItem(newSavedItem: SavedItem) {
-    savedItems.value.set(newSavedItem.url, newSavedItem);
+    savedItems.value.set(newSavedItem._id, newSavedItem);
   }
 
-  const savedItemsAsArray = computed(() => Array.from(savedItems.value, ([_, { _id, url, title }]) => ({ _id, url, title })))
+  const savedItemsAsArray = computed(() => Array.from(
+      savedItems.value,
+      ([_, { _id, url, title }]) => ({ _id, url, title })
+    ));
 
   return { 
     addSavedItem,

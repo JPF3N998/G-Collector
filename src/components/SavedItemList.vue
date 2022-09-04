@@ -1,10 +1,27 @@
 <script setup lang="ts">
 import { useSavedItemsStore } from '@/store/savedItemsStore';
-import { computed, onUpdated } from 'vue';
+import { useToExportItemsStore } from '@/store/toExportItemsStore';
+import { computed } from 'vue';
 
 const savedItemsStore = useSavedItemsStore();
+const toExportItemsStore = useToExportItemsStore();
 
 const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0);
+
+function checkboxOnChange(e: Event, _id: string) {
+  const { checked } = e.target as HTMLInputElement;
+
+  if (_id && checked) {
+    toExportItemsStore.addItemToExport(
+      savedItemsStore.savedItems.get(_id)
+    );
+    console.info('ADDED', toExportItemsStore.itemsToExport);
+  } else {
+    toExportItemsStore.removeItemFromExport(_id)
+    console.info('REMOVED', toExportItemsStore.itemsToExport);
+  }
+}
+
 </script>
 
 <template>
@@ -19,17 +36,18 @@ const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0)
       :key="savedItem.url"
       class="item-row"
     >
-      <input class="checkbox" type="checkbox" :id="savedItem.url">
-      <!-- Replace anchor text with an icon to avoid accidental
-      clicks and forcing user to re do everything -->
+      <input
+        :id="savedItem.url" 
+        class="checkbox" 
+        type="checkbox"
+        @change="(e) => checkboxOnChange(e, savedItem._id || '')"
+      >
 
       <span
         class="itemTitle"
         :title="savedItem.title"
       >
         {{savedItem.title}}
-        <br>
-        {{savedItem._id}}
       </span>
         
       <a
