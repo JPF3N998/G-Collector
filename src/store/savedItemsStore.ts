@@ -9,7 +9,7 @@ export const useSavedItemsStore= defineStore('savedItemsStore', () => {
     savedItems.value.set(newSavedItem.url, newSavedItem);
   }
 
-  const savedItemsAsArray = computed(() => Array.from(savedItems.value, ([_, { url, title }]) => ({ url, title })))
+  const savedItemsAsArray = computed(() => Array.from(savedItems.value, ([_, { _id, url, title }]) => ({ _id, url, title })))
 
   return { 
     addSavedItem,

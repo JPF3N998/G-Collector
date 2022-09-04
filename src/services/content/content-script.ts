@@ -9,6 +9,8 @@ import {
   unNestElement 
 } from '@/services/content/utils/extractTools';
 
+import { getUid } from '@/utils'
+
 const  {
   GET_CONTENT_SCRIPT_STATUS,
 } = ContentScriptMessageTypes;
@@ -84,8 +86,9 @@ function handleResponse(port: chrome.runtime.Port) {
     if (!title) {
       title = `${processed.url}`;
       processed = { url: href, title: `⚠️ ${title}` }
-    } 
-
+    }
+    
+    processed._id = getUid();
     return processed;
   }
 

@@ -9,6 +9,7 @@ const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0)
 
 <template>
 <!-- Use suspense element while stuff loads? -->
+<!-- Add top-down transition when items are retrieved -->
   <section
     v-if="shouldRenderItemList"
     class="section"
@@ -27,6 +28,8 @@ const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0)
         :title="savedItem.title"
       >
         {{savedItem.title}}
+        <br>
+        {{savedItem._id}}
       </span>
         
       <a
