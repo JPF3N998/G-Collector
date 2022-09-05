@@ -59,7 +59,6 @@ function unselectAllItems() {
 
 <style scoped>
 .checkbox{
-  margin-right: 0.4rem;
   transform: scale(1.2);
 }
 .selectAllText {
@@ -71,7 +70,9 @@ function unselectAllItems() {
 }
 
 .selectAllWrapper {
-  display: flex;
   align-items: center;
+  column-gap: 0.4rem;
+  display: flex;
+  padding-left: 0.1rem;
 }
 </style>

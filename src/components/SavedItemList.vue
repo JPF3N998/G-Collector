@@ -1,25 +1,31 @@
 <script setup lang="ts">
 import { useSavedItemsStore } from '@/store/savedItemsStore';
-import { useToExportItemsStore } from '@/store/toExportItemsStore';
-import { computed } from 'vue';
+import { computed, Ref, ref, watchEffect } from 'vue';
 import SelectAllCheckbox from './SelectAllCheckbox.vue';
+import ItemRow from './ItemRow.vue';
 
 const savedItemsStore = useSavedItemsStore();
-const toExportItemsStore = useToExportItemsStore();
-
 const shouldRenderItemList = computed(() => savedItemsStore.savedItems.size > 0);
 
-function checkboxOnChange(e: Event, _id: string) {
-  const { checked } = e.target as HTMLInputElement;
+const stickyRow: Ref<HTMLTableRowElement | null> = ref(null);
 
-  if (_id && checked) {
-    toExportItemsStore.addItemToExport(
-      savedItemsStore.savedItems.get(_id)
+watchEffect(() => {
+  if (stickyRow.value) {
+    const intersectionOpts = { threshold: [1] };
+    const intersectionCallback: IntersectionObserverCallback = ([e]) => {
+      console.log(e);
+      if (stickyRow.value !== null) {
+        stickyRow.value.classList.toggle('active', e.intersectionRatio < 1);
+      }
+    };
+    const observer = new IntersectionObserver(
+      intersectionCallback,
+      intersectionOpts
     );
-  } else {
-    toExportItemsStore.removeItemFromExport(_id)
+    
+    observer.observe(stickyRow.value);
   }
-}
+})
 
 </script>
 
@@ -28,68 +34,32 @@ function checkboxOnChange(e: Event, _id: string) {
 <!-- Add top-down transition when items are retrieved -->
   <section
     v-if="shouldRenderItemList"
+    ref="section"
     class="section"
   >
-    <SelectAllCheckbox />
-
-    <div
-      v-for="savedItem in savedItemsStore.savedItemsAsArray"
-      :key="savedItem.url"
-      class="item-row"
-    >
-      <input
-        :id="savedItem.url"
-        class="checkbox" 
-        type="checkbox"
-        :checked="toExportItemsStore.itemsToExport.has(savedItem._id)"
-        @change="(e) => checkboxOnChange(e, savedItem._id || '')"
-      >
-
-      <span
-        class="itemTitle"
-        :title="savedItem.title"
-      >
-        {{savedItem.title}}
-      </span>
-        
-      <a
-        :href="savedItem.url"
-        target="_blank"
-        rel="external"
-      >
-        <span class="material-symbols-outlined">
-          open_in_new
-        </span>
-      </a>
-    </div>
+    <table>
+      <tbody>
+        <tr
+          class="stickyRow"
+          ref="stickyRow"
+        >
+          <SelectAllCheckbox />
+        </tr>
+        <tr
+          v-for="savedItem in savedItemsStore.savedItemsAsArray"
+          :key="savedItem.url"
+          class="item-row"
+        >
+          <td>
+            <ItemRow :item="savedItem" />
+          </td>
+      </tr>
+      </tbody>
+    </table>
   </section>
 </template>
 
 <style scoped>
-.checkbox{
-  transform: scale(1.2);
-}
-
-.item-row {
-  align-items: center;
-  column-gap: 0.4rem;
-  display: flex;
-  min-height: 2rem;
-  padding: 0.3rem 0.3rem 0.3rem 0;
-  transition: 0.3ms;
-}
-
-.item-row:hover {
-  background-color: rgb(73, 73, 73);
-}
-
-.itemTitle {
-  flex-grow: 1;
-  max-height: 2.5rem;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
-
 .section {
   border-radius: 0.3rem;
   display: flex;
@@ -101,7 +71,14 @@ function checkboxOnChange(e: Event, _id: string) {
   overflow-y: scroll;
 }
 
-.material-symbols-outlined {
-  justify-content: end;
+.stickyRow {
+  position: -webkit-sticky;
+  position: sticky;
+  top: -1px;
+}
+
+.stickyRow.active {
+  background-color: #242424;
+  z-index: 1;
 }
 </style>

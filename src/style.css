@@ -45,6 +45,11 @@
   background-color: #288541;
 }
 
+.checkbox{
+  transform: scale(1.2);
+}
+
+/* Generated */
 a {
   font-weight: 500;
   color: #646cff;
