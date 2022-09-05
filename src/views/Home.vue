@@ -62,8 +62,13 @@ async function collectSavedItems() {
 <template>
   <div id="body">
     <header id="header">
-      <button v-if="shouldShowExtractButton" @click="collectSavedItems()">Collect saved items</button>
-
+      <button
+        v-if="shouldShowExtractButton"
+        class="CTA"
+        @click="collectSavedItems()"
+      >
+        Collect saved items
+      </button>
     </header>
     <main id="main">
       <SavedItemList />
@@ -87,8 +92,10 @@ async function collectSavedItems() {
 }
 
 #header {
+  display: flex;
   height: min-content;
   flex-grow: 0.1;
+  
 }
 
 #main {

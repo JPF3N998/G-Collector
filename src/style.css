@@ -37,6 +37,14 @@
   background: #555;
 }
 
+.CTA {
+  background-color: #34a853;
+}
+
+.CTA:hover {
+  background-color: #288541;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
