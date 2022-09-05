@@ -20,10 +20,17 @@ export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
     }
   }
 
+  function setItemsToExport(bulkItemsToExport: Map<string, SavedItem>) {
+    console.log(itemsToExport);
+    itemsToExport.value = bulkItemsToExport;
+    console.log(itemsToExport);
+  }
+
   return {
     addItemToExport,
     itemsCount,
     itemsToExport,
-    removeItemFromExport
+    removeItemFromExport,
+    setItemsToExport
   };
 })

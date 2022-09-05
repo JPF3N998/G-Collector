@@ -15,10 +15,8 @@ function checkboxOnChange(e: Event, _id: string) {
     toExportItemsStore.addItemToExport(
       savedItemsStore.savedItems.get(_id)
     );
-    console.info('ADDED', toExportItemsStore.itemsCount);
   } else {
     toExportItemsStore.removeItemFromExport(_id)
-    console.info('REMOVED', toExportItemsStore.itemsCount);
   }
 }
 
