@@ -2,6 +2,7 @@
 import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { useToExportItemsStore } from '@/store/toExportItemsStore';
 import { computed } from 'vue';
+import SelectAllCheckbox from './SelectAllCheckbox.vue';
 
 const savedItemsStore = useSavedItemsStore();
 const toExportItemsStore = useToExportItemsStore();
@@ -29,6 +30,8 @@ function checkboxOnChange(e: Event, _id: string) {
     v-if="shouldRenderItemList"
     class="section"
   >
+    <SelectAllCheckbox />
+
     <div
       v-for="savedItem in savedItemsStore.savedItemsAsArray"
       :key="savedItem.url"
@@ -72,7 +75,7 @@ function checkboxOnChange(e: Event, _id: string) {
   column-gap: 0.4rem;
   display: flex;
   min-height: 2rem;
-  padding: 0.3rem;
+  padding: 0.3rem 0.3rem 0.3rem 0;
   transition: 0.3ms;
 }
 

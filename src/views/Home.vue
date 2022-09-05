@@ -7,7 +7,6 @@ import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { SavedItem } from '@/models/SavedItem';
 import SavedItemList from '@/components/SavedItemList.vue';
 import ItemsToExportCounterVue from '@/components/ItemsToExportCounter.vue';
-import SelectAllButton from '@/components/SelectAllButton.vue';
 
 const router = useRouter();
 
@@ -70,8 +69,6 @@ async function collectSavedItems() {
       >
         Collect saved items
       </button>
-      <!-- select all button -->
-      <SelectAllButton />
     </header>
     <main id="main">
       <SavedItemList />
@@ -98,7 +95,7 @@ async function collectSavedItems() {
   display: flex;
   height: min-content;
   flex-grow: 0.1;
-  
+  justify-content: space-between;
 }
 
 #main {

@@ -7,7 +7,7 @@ import { computed } from 'vue';
 const savedItemsStore = useSavedItemsStore();
 const toExportItemsStore = useToExportItemsStore();
 
-const buttonText = computed(
+const checkboxText = computed(
   () => (areAllItemsSelected.value ? 'Unselect all' : 'Select all')
 );
 
@@ -42,10 +42,36 @@ function unselectAllItems() {
 </script>
 
 <template>
-  <button
-    v-if="savedItemsStore.itemsCount"
-    @click="handleClick()"
-  >
-    {{buttonText}}
-  </button>
+  <section class="selectAllWrapper">
+    <input
+      v-if="savedItemsStore.itemsCount"
+      class="checkbox"
+      type="checkbox"
+      @change="handleClick()"
+    >
+    <span
+      class="selectAllText"
+    >
+      {{checkboxText}}
+    </span>
+  </section>
 </template>
+
+<style scoped>
+.checkbox{
+  margin-right: 0.4rem;
+  transform: scale(1.2);
+}
+.selectAllText {
+  flex-grow: 1;
+  font-weight: bolder;
+  max-height: 2.5rem;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+.selectAllWrapper {
+  display: flex;
+  align-items: center;
+}
+</style>
