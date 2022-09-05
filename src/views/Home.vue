@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router'
 import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { SavedItem } from '@/models/SavedItem';
 import SavedItemList from '@/components/SavedItemList.vue';
+import ItemsToExportCounterVue from '@/components/ItemsToExportCounter.vue';
 
 const router = useRouter();
 
@@ -68,6 +69,7 @@ async function collectSavedItems() {
       <SavedItemList />
     </main>
     <footer id="footer">
+      <ItemsToExportCounterVue />
     </footer>
   </div>
 </template>

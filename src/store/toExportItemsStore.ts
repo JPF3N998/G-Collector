@@ -1,9 +1,11 @@
 import { SavedItem } from '@/models/SavedItem'
 import { defineStore } from 'pinia'
-import { Ref, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
   const itemsToExport = ref(new Map<string, SavedItem>());
+
+  const itemsCount = computed(() => itemsToExport.value.size);
 
   function addItemToExport(savedItem: SavedItem | undefined) {
     if (savedItem && savedItem._id) {
@@ -20,6 +22,7 @@ export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
 
   return {
     addItemToExport,
+    itemsCount,
     itemsToExport,
     removeItemFromExport
   };
