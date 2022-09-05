@@ -15,10 +15,10 @@ function checkboxOnChange(e: Event, _id: string) {
     toExportItemsStore.addItemToExport(
       savedItemsStore.savedItems.get(_id)
     );
-    console.info('ADDED', toExportItemsStore.itemsToExport);
+    console.info('ADDED', toExportItemsStore.itemsCount);
   } else {
     toExportItemsStore.removeItemFromExport(_id)
-    console.info('REMOVED', toExportItemsStore.itemsToExport);
+    console.info('REMOVED', toExportItemsStore.itemsCount);
   }
 }
 
@@ -37,9 +37,10 @@ function checkboxOnChange(e: Event, _id: string) {
       class="item-row"
     >
       <input
-        :id="savedItem.url" 
+        :id="savedItem.url"
         class="checkbox" 
         type="checkbox"
+        :checked="toExportItemsStore.itemsToExport.has(savedItem._id)"
         @change="(e) => checkboxOnChange(e, savedItem._id || '')"
       >
 
@@ -74,9 +75,10 @@ function checkboxOnChange(e: Event, _id: string) {
   display: flex;
   min-height: 2rem;
   padding: 0.3rem;
+  transition: 0.3ms;
 }
 
-.item-row:nth-child(odd) {
+.item-row:hover {
   background-color: rgb(73, 73, 73);
 }
 
