@@ -11,7 +11,7 @@ const areThereElements = computed(() => savedItemsStore.itemsCount > 0);
 const disableExportButton = computed(() => toExportItemsStore.itemsCount <= 0);
 
 function handleClick() {
-  console.log('click');
+  console.log(toExportItemsStore.toCsv());
 }
 </script>
 
