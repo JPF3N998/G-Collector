@@ -34,3 +34,7 @@ Wanted to attempt creating a Chrome Extension with manifest V3 due to V2 being d
     - Pocket
     - Notion
     - etc.
+
+# **Not** best practices
+
+- All commits to master instead of having a dev/feature branch
