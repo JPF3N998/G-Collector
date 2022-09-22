@@ -36,6 +36,9 @@ function exportToCSV() {
       :disabled="disableExportButton"
       @click="exportToCSV"
     >
+    <span class="material-symbols-outlined">
+      file_download
+    </span>
     To .csv
     </button>
   </section>
