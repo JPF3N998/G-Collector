@@ -47,7 +47,7 @@ watchEffect(() => {
         <tr
           v-for="savedItem in savedItemsStore.savedItemsAsArray"
           :key="savedItem.url"
-          class="item-row"
+          class="tableRow"
         >
           <td>
             <ItemRow :item="savedItem" />
@@ -59,8 +59,12 @@ watchEffect(() => {
 </template>
 
 <style scoped>
+.tableRow:nth-child(even) {
+   background-color: #303030;
+}
 .section {
   border-radius: 0.3rem;
+  box-shadow: 0px 0px 4px 0px #0e0c0c;
   display: flex;
   flex-direction: column;
   margin: 0.5rem 0 0.5rem 0;
