@@ -13,7 +13,6 @@ watchEffect(() => {
   if (stickyRow.value) {
     const intersectionOpts = { threshold: [1] };
     const intersectionCallback: IntersectionObserverCallback = ([e]) => {
-      console.log(e);
       if (stickyRow.value !== null) {
         stickyRow.value.classList.toggle('active', e.intersectionRatio < 1);
       }
