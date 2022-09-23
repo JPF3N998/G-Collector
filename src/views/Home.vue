@@ -26,7 +26,6 @@ onMounted(async () => {
     const message = { type: GET_CONTENT_SCRIPT_STATUS };
     tabId = await getCurrentTabID();
     const response = await chrome.tabs.sendMessage(tabId, message);
-    console.log('Content script injected: ', response);
     shouldShowExtractButton.value = true;
   } catch {
     router.replace({
