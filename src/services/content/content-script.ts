@@ -131,10 +131,11 @@ function handleResponse(port: chrome.runtime.Port) {
 
     data = processItemColumns(columnsWrapper);
   }
-  console.log(
-    unNestElement(locateNewCollectionButton(), 2)
-    );
 
+  console.log(
+    locateNewCollectionButton()
+  );
+  
   console.log('Took ', Date.now() - start ,'ms')
 
   return data;
