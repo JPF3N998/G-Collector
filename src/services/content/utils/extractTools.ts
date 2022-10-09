@@ -1,4 +1,8 @@
 const SOCIAL_SHARE_BUTTON_IMG_SELECTOR = 'img[src="https://www.gstatic.com/save/icons/share_blue.svg"]';
+const MATERIAL_ICONS_CLASS = 'material-icons-extended';
+const ICONS_SELECTOR = `i.${MATERIAL_ICONS_CLASS}`;
+const TARGET_ICON_TEXT_CONTENT = 'add';
+
 /**
  * Go up "n" parent nodes from passed element.
  */
@@ -30,8 +34,22 @@ const locateColumnsWrapper = (savedItemsGrid: any | null) => {
   return div;
 }
 
+const locateNewCollectionButton = () => {
+  let targetIcon;
+  const icons = document.querySelectorAll(ICONS_SELECTOR);
+  
+  icons.forEach(icon => {
+    if (icon.textContent === TARGET_ICON_TEXT_CONTENT) {
+      targetIcon = icon;
+    }
+  });
+
+  return targetIcon;
+}
+
 export {
   SOCIAL_SHARE_BUTTON_IMG_SELECTOR,
   unNestElement,
-  locateColumnsWrapper
+  locateColumnsWrapper,
+  locateNewCollectionButton,
 }

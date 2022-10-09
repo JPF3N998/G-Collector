@@ -6,7 +6,8 @@ import { SavedItem } from '@/models/SavedItem';
 import { 
   SOCIAL_SHARE_BUTTON_IMG_SELECTOR,
   locateColumnsWrapper,
-  unNestElement 
+  locateNewCollectionButton,
+  unNestElement,
 } from '@/services/content/utils/extractTools';
 
 import { getUid } from '@/utils'
@@ -130,6 +131,9 @@ function handleResponse(port: chrome.runtime.Port) {
 
     data = processItemColumns(columnsWrapper);
   }
+  console.log(
+    unNestElement(locateNewCollectionButton(), 2)
+    );
 
   console.log('Took ', Date.now() - start ,'ms')
 
