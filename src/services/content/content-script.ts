@@ -6,7 +6,7 @@ import { SavedItem } from '@/models/SavedItem';
 import { 
   SOCIAL_SHARE_BUTTON_IMG_SELECTOR,
   locateColumnsWrapper,
-  locateNewCollectionButton,
+  getUserCollections,
   unNestElement,
 } from '@/services/content/utils/extractTools';
 
@@ -133,10 +133,14 @@ function handleResponse(port: chrome.runtime.Port) {
   }
 
   console.log(
-    locateNewCollectionButton()
+    getUserCollections()
   );
   
   console.log('Took ', Date.now() - start ,'ms')
 
   return data;
 }
+
+
+// Need to craft the URL manually for each collection
+// We can extract the data-id from one of the span's children
