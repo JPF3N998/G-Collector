@@ -16,8 +16,13 @@ export const useSavedItemsStore= defineStore('savedItemsStore', () => {
     savedItems.value.set(newSavedItem._id, newSavedItem);
   }
 
+  function clearItems() {
+    savedItems.value.clear();
+  }
+
   return { 
     addSavedItem,
+    clearItems,
     itemsCount,
     savedItems,
     savedItemsAsArray
