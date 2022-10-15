@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
-import { getCurrentTabID } from '@/utils'
+import { ContentScriptMessageTypes, MessagePortNames } from '@/constants';
+import { getCurrentTabID } from '@/utils';
 import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router';
 import { useSavedItemsStore } from '@/store/savedItemsStore';
 import { SavedItem } from '@/models/SavedItem';
 import SavedItemList from '@/components/SavedItemList.vue';
@@ -12,15 +12,14 @@ const router = useRouter();
 
 const {
   GET_CONTENT_SCRIPT_STATUS,
-  GET_COLLECTION_SAVED_ITEMS
+  GET_COLLECTION_SAVED_ITEMS,
+  REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
 
-const {
-  MAIN
-} = MessagePortNames
+const { MAIN } = MessagePortNames;
 
 let tabId: number;
-const shouldShowExtractButton = ref(false)
+const shouldShowExtractButton = ref(false);
 onMounted(async () => {
   try {
     const message = { type: GET_CONTENT_SCRIPT_STATUS };
@@ -29,13 +28,14 @@ onMounted(async () => {
     shouldShowExtractButton.value = true;
   } catch {
     router.replace({
-      name: 'unsupported'
+      name: 'unsupported',
     });
   }
-})
+});
 const savedItemsStore = useSavedItemsStore();
 
 async function collectSavedItems() {
+  // Extract this 3 following lines to a init function or something
   const port = chrome.tabs.connect(tabId, { name: MAIN });
   const message = { type: GET_COLLECTION_SAVED_ITEMS };
   if (!port) throw Error('Error connecting to port');
@@ -44,23 +44,32 @@ async function collectSavedItems() {
 
   port.onMessage.addListener((response) => {
     if (Array.isArray(response) && response.length > 0) {
-
       response.forEach((item: SavedItem) => {
-        savedItemsStore.addSavedItem(item)
-      })
-
+        savedItemsStore.addSavedItem(item);
+      });
     } else {
       router.replace({
-        name: 'empty'
+        name: 'empty',
       });
     }
   });
+}
+
+function redirect() {
+  const port = chrome.tabs.connect(tabId, { name: MAIN });
+  const message = {
+    type: REDIRECT_TO_COLLECTION,
+    url: 'https://www.google.com/save/list/jS-e0Q2rQ2WTwcY8fd7bNg',
+  };
+  if (!port) throw Error('Error connecting to port');
+  port.postMessage(message);
 }
 </script>
 
 <template>
   <div id="body">
     <header id="header">
+      <button @click="redirect">To Dev Collection</button>
       <button
         v-if="shouldShowExtractButton"
         class="CTA"
