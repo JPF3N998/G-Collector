@@ -15,30 +15,51 @@ const {
   GET_COLLECTION_SAVED_ITEMS,
   REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
-
 const { MAIN } = MessagePortNames;
 
+type Message = {
+  type: string;
+  opts?: unknown;
+};
+
 let tabId: number;
-const shouldShowExtractButton = ref(false);
+let port: chrome.runtime.Port;
+let message: Message;
+/**
+ * Set tabId and port for component to use
+ */
+async function init() {
+  tabId = await getCurrentTabID();
+  port = chrome.tabs.connect(tabId, { name: MAIN });
+}
+
+/**
+ * Indicates if page has access to the content script
+ */
+const contentScriptInjected = ref(false);
+async function getContentScriptStatus() {
+  message = { type: GET_CONTENT_SCRIPT_STATUS };
+  await chrome.tabs.sendMessage(tabId, message);
+  contentScriptInjected.value = true;
+}
 onMounted(async () => {
   try {
-    const message = { type: GET_CONTENT_SCRIPT_STATUS };
-    tabId = await getCurrentTabID();
-    const response = await chrome.tabs.sendMessage(tabId, message);
-    shouldShowExtractButton.value = true;
-  } catch {
+    await init();
+    await getContentScriptStatus();
+  } catch (e) {
+    alert(e);
     router.replace({
       name: 'unsupported',
     });
   }
 });
+
+// End of component setup steps
+
 const savedItemsStore = useSavedItemsStore();
 
 async function collectSavedItems() {
-  // Extract this 3 following lines to a init function or something
-  const port = chrome.tabs.connect(tabId, { name: MAIN });
-  const message = { type: GET_COLLECTION_SAVED_ITEMS };
-  if (!port) throw Error('Error connecting to port');
+  message = { type: GET_COLLECTION_SAVED_ITEMS };
 
   port.postMessage(message);
 
@@ -56,12 +77,11 @@ async function collectSavedItems() {
 }
 
 function redirect() {
-  const port = chrome.tabs.connect(tabId, { name: MAIN });
   const message = {
     type: REDIRECT_TO_COLLECTION,
     url: 'https://www.google.com/save/list/jS-e0Q2rQ2WTwcY8fd7bNg',
   };
-  if (!port) throw Error('Error connecting to port');
+
   port.postMessage(message);
 }
 </script>
@@ -71,7 +91,7 @@ function redirect() {
     <header id="header">
       <button @click="redirect">To Dev Collection</button>
       <button
-        v-if="shouldShowExtractButton"
+        v-if="contentScriptInjected"
         class="CTA"
         @click="collectSavedItems()"
       >
