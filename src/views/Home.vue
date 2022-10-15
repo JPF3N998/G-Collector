@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Collection } from '@/models/Collection';
 import { ContentScriptMessageTypes, MessagePortNames } from '@/constants';
 import { getCurrentTabID } from '@/utils';
 import { onMounted, ref } from 'vue';
@@ -13,6 +14,7 @@ const router = useRouter();
 const {
   GET_CONTENT_SCRIPT_STATUS,
   GET_COLLECTION_SAVED_ITEMS,
+  GET_COLLECTIONS_LIST,
   REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
 const { MAIN } = MessagePortNames;
@@ -42,10 +44,28 @@ async function getContentScriptStatus() {
   await chrome.tabs.sendMessage(tabId, message);
   contentScriptInjected.value = true;
 }
+
+const collectionsList = ref(new Map<string, Collection>());
+async function getSetCollectionList() {
+  message = { type: GET_COLLECTIONS_LIST };
+
+  port.postMessage(message);
+
+  port.onMessage.addListener((response) => {
+    if (Array.isArray(response) && response.length > 0) {
+      response.forEach((collection: Collection) => {
+        // Consider creating a store for only collections?
+        collectionsList.value.set(collection._id, collection);
+      });
+    }
+  });
+}
+
 onMounted(async () => {
   try {
     await init();
     await getContentScriptStatus();
+    await getSetCollectionList();
   } catch (e) {
     alert(e);
     router.replace({

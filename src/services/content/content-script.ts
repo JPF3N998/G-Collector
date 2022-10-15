@@ -13,9 +13,10 @@ import {
 import { getUid } from '@/utils'
 
 const  {
-  GET_CONTENT_SCRIPT_STATUS,
+  GET_COLLECTIONS_LIST,
   GET_COLLECTION_SAVED_ITEMS,
-  REDIRECT_TO_COLLECTION
+  GET_CONTENT_SCRIPT_STATUS,
+  REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
 
 const { 
@@ -52,6 +53,10 @@ function handle_REDIRECT_TO_COLLECTION({ opts }: HandlerArgs) {
   location.href = url;
 }
 
+function handle_GET_COLLECTIONS_LIST({ port }: HandlerArgs) {
+  port.postMessage(getCollectionsList());
+}
+
 function handleResponse(port: chrome.runtime.Port) {
 
   // Middleware to attach port instance to handler
@@ -66,9 +71,15 @@ function handleResponse(port: chrome.runtime.Port) {
       case GET_COLLECTION_SAVED_ITEMS:
         call(handle_GET_COLLECTION_SAVED_ITEMS);
         break;
+
+      case GET_COLLECTIONS_LIST:
+        call(handle_GET_COLLECTIONS_LIST);
+        break;
+
       case REDIRECT_TO_COLLECTION:
         call(handle_REDIRECT_TO_COLLECTION, { url: request.url });
         break;
+
       default:
         break;
     }
@@ -164,15 +175,14 @@ function handleResponse(port: chrome.runtime.Port) {
     data = processItemColumns(columnsWrapper);
   }
 
-  console.log(
-    getUserCollections()
-  );
-  
   console.log('Took ', Date.now() - start ,'ms')
 
   return data;
 }
 
+function getCollectionsList() {
+  return getUserCollections();
+}
 
 // Need to craft the URL manually for each collection
 // We can extract the data-id from one of the span's children
