@@ -14,6 +14,7 @@ import { getUid } from '@/utils'
 
 const  {
   GET_CONTENT_SCRIPT_STATUS,
+  GET_COLLECTION_SAVED_ITEMS,
 } = ContentScriptMessageTypes;
 
 const { 
@@ -35,12 +36,34 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
+// Switch case handlers, move this to another place?
+type HandlerArgs = {
+  port: chrome.runtime.Port,
+  opts?: any,
+};
+
+function handle_GET_COLLECTION_SAVED_ITEMS({ port }: HandlerArgs) {
+  port.postMessage(extractSavedItemsData());
+}
+
 function handleResponse(port: chrome.runtime.Port) {
+
+  // Middleware to attach port instance to handler
+  const call = (handlerFunc: Function, opts?: Object) => {
+    handlerFunc({ port, opts });
+  }
+
   port.onMessage.addListener(request => {
-    if (request) {
-      port.postMessage(extractSavedItemsData())
+    const { type } = request;
+    
+    switch(type){
+      case GET_COLLECTION_SAVED_ITEMS:
+        call(handle_GET_COLLECTION_SAVED_ITEMS);
+        break;
+      default:
+        break;
     }
-  })
+  });
 }
 
 /**
