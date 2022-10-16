@@ -48,7 +48,8 @@ function handle_GET_COLLECTION_SAVED_ITEMS({ port }: HandlerArgs) {
   port.postMessage(extractSavedItemsData());
 }
 
-function handle_REDIRECT_TO_COLLECTION({ opts }: HandlerArgs) {
+function handle_REDIRECT_TO_COLLECTION({ port, opts }: HandlerArgs) {
+  port.disconnect()
   const { url } = opts;
   location.href = url;
 }
