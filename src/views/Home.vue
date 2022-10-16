@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { Collection } from '@/models/Collection';
 import { ContentScriptMessageTypes, MessagePortNames } from '@/constants';
-import { getCurrentTabID } from '@/utils';
+import { Collection } from '@/models/Collection';
+import { SavedItem } from '@/models/SavedItem';
+import { useSavedItemsStore } from '@/store/savedItemsStore';
+import { buildCollectionRedirectURL, getCurrentTabID } from '@/utils';
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useSavedItemsStore } from '@/store/savedItemsStore';
-import { SavedItem } from '@/models/SavedItem';
+
+// Index for components and import them by destructure?
+import CollectionsDropdown from '@/components/CollectionsDropdown.vue';
 import SavedItemList from '@/components/SavedItemList.vue';
 import TheFooter from '@/components/TheFooter.vue';
 
@@ -27,6 +30,7 @@ type Message = {
 let tabId: number;
 let port: chrome.runtime.Port;
 let message: Message;
+
 /**
  * Set tabId and port for component to use
  */
@@ -55,7 +59,7 @@ async function getSetCollectionList() {
     if (Array.isArray(response) && response.length > 0) {
       response.forEach((collection: Collection) => {
         // Consider creating a store for only collections?
-        collectionsList.value.set(collection._id, collection);
+        collectionsList.value.set(collection.name, collection);
       });
     }
   });
@@ -96,10 +100,11 @@ async function collectSavedItems() {
   });
 }
 
-function redirect() {
+function handleCollectionChange(collection: Collection) {
+  const url = buildCollectionRedirectURL(collection._id);
   const message = {
     type: REDIRECT_TO_COLLECTION,
-    url: 'https://www.google.com/save/list/jS-e0Q2rQ2WTwcY8fd7bNg',
+    url,
   };
 
   port.postMessage(message);
@@ -109,7 +114,10 @@ function redirect() {
 <template>
   <div id="body">
     <header id="header">
-      <button @click="redirect">To Dev Collection</button>
+      <CollectionsDropdown
+        :options="collectionsList"
+        @collectionSelect="handleCollectionChange"
+      />
       <button
         v-if="contentScriptInjected"
         class="CTA"
