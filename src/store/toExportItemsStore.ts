@@ -11,12 +11,15 @@ export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
     itemsToExport.value,
     ([_, { _id, url, title }]) => ({ _id, url, title })
   ));
-
-
+  
   function addItemToExport(savedItem: SavedItem | undefined) {
     if (savedItem && savedItem._id) {
       itemsToExport.value.set(savedItem._id, savedItem);
     }
+  }
+
+  function clearItems() {
+    itemsToExport.value.clear();
   }
 
   function removeItemFromExport(_id: string) {
@@ -47,6 +50,7 @@ export const useToExportItemsStore= defineStore('toExportItemsStore', () => {
 
   return {
     addItemToExport,
+    clearItems,
     itemsCount,
     itemsToExport,
     removeItemFromExport,

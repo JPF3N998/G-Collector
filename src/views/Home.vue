@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ContentScriptMessageTypes, MessagePortNames } from '@/constants'
-import { getCurrentTabID } from '@/utils'
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router'
-import { useSavedItemsStore } from '@/store/savedItemsStore';
+import { ContentScriptMessageTypes, MessagePortNames } from '@/constants';
+import { Collection } from '@/models/Collection';
 import { SavedItem } from '@/models/SavedItem';
+import { useSavedItemsStore } from '@/store/savedItemsStore';
+import { buildCollectionRedirectURL, getCurrentTabID } from '@/utils';
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+// Index for components and import them by destructure?
+import CollectionsDropdown from '@/components/CollectionsDropdown.vue';
 import SavedItemList from '@/components/SavedItemList.vue';
 import TheFooter from '@/components/TheFooter.vue';
 
@@ -12,57 +16,110 @@ const router = useRouter();
 
 const {
   GET_CONTENT_SCRIPT_STATUS,
-  GET_COLLECTION_SAVED_ITEMS
+  GET_COLLECTION_SAVED_ITEMS,
+  GET_COLLECTIONS_LIST,
+  REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
+const { MAIN } = MessagePortNames;
 
-const {
-  MAIN
-} = MessagePortNames
+type Message = {
+  type: string;
+  opts?: unknown;
+};
 
 let tabId: number;
-const shouldShowExtractButton = ref(false)
-onMounted(async () => {
-  try {
-    const message = { type: GET_CONTENT_SCRIPT_STATUS };
-    tabId = await getCurrentTabID();
-    const response = await chrome.tabs.sendMessage(tabId, message);
-    shouldShowExtractButton.value = true;
-  } catch {
-    router.replace({
-      name: 'unsupported'
-    });
-  }
-})
-const savedItemsStore = useSavedItemsStore();
+let port: chrome.runtime.Port;
+let message: Message;
 
-async function collectSavedItems() {
-  const port = chrome.tabs.connect(tabId, { name: MAIN });
-  const message = { type: GET_COLLECTION_SAVED_ITEMS };
-  if (!port) throw Error('Error connecting to port');
+/**
+ * Set tabId and port for component to use
+ */
+async function init() {
+  tabId = await getCurrentTabID();
+  port = chrome.tabs.connect(tabId, { name: MAIN });
+}
+
+/**
+ * Indicates if page has access to the content script
+ */
+const contentScriptInjected = ref(false);
+async function getContentScriptStatus() {
+  message = { type: GET_CONTENT_SCRIPT_STATUS };
+  await chrome.tabs.sendMessage(tabId, message);
+  contentScriptInjected.value = true;
+}
+
+const collectionsList = ref(new Map<string, Collection>());
+async function getSetCollectionList() {
+  message = { type: GET_COLLECTIONS_LIST };
 
   port.postMessage(message);
 
   port.onMessage.addListener((response) => {
     if (Array.isArray(response) && response.length > 0) {
-
-      response.forEach((item: SavedItem) => {
-        savedItemsStore.addSavedItem(item)
-      })
-
-    } else {
-      router.replace({
-        name: 'empty'
+      response.forEach((collection: Collection) => {
+        // Consider creating a store for only collections?
+        collectionsList.value.set(collection.name, collection);
       });
     }
   });
+}
+
+onMounted(async () => {
+  try {
+    await init();
+    await getContentScriptStatus();
+    await getSetCollectionList();
+  } catch (e) {
+    alert(e);
+    router.replace({
+      name: 'unsupported',
+    });
+  }
+});
+
+// End of component setup steps
+
+const savedItemsStore = useSavedItemsStore();
+
+async function collectSavedItems() {
+  message = { type: GET_COLLECTION_SAVED_ITEMS };
+
+  port.postMessage(message);
+
+  port.onMessage.addListener((response) => {
+    if (Array.isArray(response) && response.length > 0) {
+      response.forEach((item: SavedItem) => {
+        savedItemsStore.addSavedItem(item);
+      });
+    } else {
+      router.replace({
+        name: 'empty',
+      });
+    }
+  });
+}
+
+function handleCollectionChange(collection: Collection) {
+  const url = buildCollectionRedirectURL(collection._id);
+  const message = {
+    type: REDIRECT_TO_COLLECTION,
+    url,
+  };
+
+  port.postMessage(message);
 }
 </script>
 
 <template>
   <div id="body">
     <header id="header">
+      <CollectionsDropdown
+        :options="collectionsList"
+        @collectionSelect="handleCollectionChange"
+      />
       <button
-        v-if="shouldShowExtractButton"
+        v-if="contentScriptInjected"
         class="CTA"
         @click="collectSavedItems()"
       >

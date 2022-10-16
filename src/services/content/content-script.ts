@@ -6,13 +6,17 @@ import { SavedItem } from '@/models/SavedItem';
 import { 
   SOCIAL_SHARE_BUTTON_IMG_SELECTOR,
   locateColumnsWrapper,
-  unNestElement 
+  getUserCollections,
+  unNestElement,
 } from '@/services/content/utils/extractTools';
 
 import { getUid } from '@/utils'
 
 const  {
+  GET_COLLECTIONS_LIST,
+  GET_COLLECTION_SAVED_ITEMS,
   GET_CONTENT_SCRIPT_STATUS,
+  REDIRECT_TO_COLLECTION,
 } = ContentScriptMessageTypes;
 
 const { 
@@ -34,12 +38,53 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 })
 
+// Switch case handlers
+type HandlerArgs = {
+  port: chrome.runtime.Port,
+  opts?: any,
+};
+
+function handle_GET_COLLECTION_SAVED_ITEMS({ port }: HandlerArgs) {
+  port.postMessage(extractSavedItemsData());
+}
+
+function handle_REDIRECT_TO_COLLECTION({ port, opts }: HandlerArgs) {
+  port.disconnect()
+  const { url } = opts;
+  location.href = url;
+}
+
+function handle_GET_COLLECTIONS_LIST({ port }: HandlerArgs) {
+  port.postMessage(getCollectionsList());
+}
+
 function handleResponse(port: chrome.runtime.Port) {
+
+  // Middleware to attach port instance to handler
+  const call = (handlerFunc: Function, opts?: Object) => {
+    handlerFunc({ port, opts });
+  }
+
   port.onMessage.addListener(request => {
-    if (request) {
-      port.postMessage(extractSavedItemsData())
+    const { type } = request;
+    
+    switch(type){
+      case GET_COLLECTION_SAVED_ITEMS:
+        call(handle_GET_COLLECTION_SAVED_ITEMS);
+        break;
+
+      case GET_COLLECTIONS_LIST:
+        call(handle_GET_COLLECTIONS_LIST);
+        break;
+
+      case REDIRECT_TO_COLLECTION:
+        call(handle_REDIRECT_TO_COLLECTION, { url: request.url });
+        break;
+
+      default:
+        break;
     }
-  })
+  });
 }
 
 /**
@@ -135,3 +180,10 @@ function handleResponse(port: chrome.runtime.Port) {
 
   return data;
 }
+
+function getCollectionsList() {
+  return getUserCollections();
+}
+
+// Need to craft the URL manually for each collection
+// We can extract the data-id from one of the span's children

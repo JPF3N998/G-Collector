@@ -8,7 +8,10 @@ const getUid = function(){
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+const buildCollectionRedirectURL = (collectionId: string) => `https://www.google.com/save/list/${collectionId}`;
+
 export {
+  buildCollectionRedirectURL,
   getCurrentTabID,
   getUid
 }
